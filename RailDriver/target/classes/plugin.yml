@@ -1,0 +1,28 @@
+name: RailDriver
+main: ca.mcpnet.RailDriver.RailDriver
+version: 0.6
+author: globnobulous ( bugfix + some new features by m0rkeulv)
+description: A modified version of RailDriver made to work with Bukkit 1.4.7 and later
+commands:
+   rd_stock:
+      description: stock the player inventory with all required blocks for building a raildriver
+      permission: RailDriver.rd_stock
+      usage: /<command> [player]
+   rd_devkit:
+      description: stock the player inventory with a developers kit of tools
+      permission: RailDriver.rd_devkit
+      usage: /<command> [player]
+   rd_reload:
+      description: Reloads the Raildriver configuration file
+      permission: RailDriver.rd_reload
+      usage: /<command>
+permissions:
+   RailDriver.rd_stock:
+      description: allows player to execute the rd_stock command
+      default: op
+   RailDriver.rd_devkit:
+      description: allows player to execute the rd_devkit command
+      default: op
+   RailDriver.rd_reload:
+      description: allows player to execute the rd_reload command
+      default: op
