@@ -87,16 +87,19 @@ public class RailDriverTask implements Runnable {
 	}
 	void setDrillSwitch(boolean on) {
 		Block block = getRelativeBlock(2,1,2);
-		Lever leverblock = new Lever(block.getType(),block.getData());
-		leverblock.setPowered(on);
-		block.setData(leverblock.getData());
+		switcher(block, on);
 	}
 	void setMainSwitch(boolean on) {
 		Block block = getRelativeBlock(0,1,1);
+		switcher(block, on);
+	}
+	
+	protected void switcher(Block block, boolean on) {
 		Lever leverblock = new Lever(block.getType(),block.getData());
 		leverblock.setPowered(on);
 		block.setData(leverblock.getData());
 	}
+	
 	public void run() {
 		//localbroadcast("itterator:"+iteration);
 		if (taskid == -1) {
@@ -234,36 +237,33 @@ public class RailDriverTask implements Runnable {
 			ItemStack item = items[i]; 
 			//plugin.logger.info("item:"+item);
 			if (item == null) continue;
-			if (item.getType() == Material.COAL)
-			{
-				//plugin.logger.info(item.getData().getData() +" == "+ CoalType.CHARCOAL.getData());
-				if (item.getData().getData() == CoalType.CHARCOAL.getData())
-				{
-					return item;
-				}
-				//plugin.logger.info(item.getData().getData() +" == "+ CoalType.CHARCOAL.getData());
-				if (item.getData().getData() == CoalType.COAL.getData()) 
-				{
-					return item;
-				}
+			if (item.getType() == Material.COAL) {
 				return item;
+			} else if (item.getType() == Material.COAL_BLOCK){
+				int amount = item.getAmount() *9;
+				ItemStack coals = new ItemStack(Material.COAL, amount);
+				inventory.removeItem(item);
+				inventory.addItem(coals);
+				
+				return coals;
 			}
 		}
 		//plugin.logger.info("coal not fund ?");
 		return null;
 	}
 	
-	private void removeCoal(Inventory inventory)
-	{
+	private void removeCoal(Inventory inventory){
 		ItemStack coal =  findCoal(inventory);
-		int amount = coal.getAmount() -1;
+		if (coal.getType() == Material.COAL) {
+			int amount = coal.getAmount() -1;
 		
-		if (amount == 0)
-			inventory.removeItem(coal);
-		else 
-			coal.setAmount(amount);
+			if (amount == 0)
+				inventory.removeItem(coal);
+			else 
+				coal.setAmount(amount);
+		}
 	}
-	
+	 
 	private boolean burnCoal() 
 	{
 		Block leftblock = getRelativeBlock(1,0,0);
@@ -272,11 +272,12 @@ public class RailDriverTask implements Runnable {
 		Block rightblock = getRelativeBlock(1,2,0);
 		Furnace rightfurnace = (Furnace) rightblock.getState();
 		Inventory rightinventory = rightfurnace.getInventory();
+		Chest chest = (Chest) getRelativeBlock(1,1,2).getState();
+		Inventory invChest = chest.getInventory();
 		
-		if (leftinventory.contains(Material.COAL) && (rightinventory.contains(Material.COAL)))
+		if (ensureHasCoal(leftinventory, invChest) && ensureHasCoal(rightinventory, invChest))
+		//(leftinventory.contains(Material.COAL) && (rightinventory.contains(Material.COAL)))
 		{
-			
-			
 			removeCoal(leftinventory);
 			removeCoal(rightinventory);
 	
@@ -285,10 +286,44 @@ public class RailDriverTask implements Runnable {
 			//rightinventory.removeItem(new ItemStack(Material.COAL.getId(),1,(short)0),new ItemStack(Material.COAL,1));
 			leftfurnace.update();
 			rightfurnace.update();
+			chest.update();
 			return true;
 		}
-		
+		leftfurnace.update();
+        rightfurnace.update();
+        chest.update();
 		return false;
+	}
+	
+	private boolean ensureHasCoal(Inventory target, Inventory backup) {
+	    if (target.contains(Material.COAL)) {
+	        return true;
+	    }
+	    if (backup.contains(Material.COAL)) {
+	        int slot = backup.first(Material.COAL);
+	        ItemStack stack = backup.getItem(slot);
+	        if (stack.getAmount() > 1) {
+	            stack.setAmount(stack.getAmount() - 1);
+	        } else {
+	            stack = null;
+	        }
+            backup.setItem(slot, stack);
+	        target.addItem(new ItemStack(Material.COAL));
+	        return true;
+	    } 
+	    if (backup.contains(Material.COAL_BLOCK)) {
+	        int slot = backup.first(Material.COAL_BLOCK);
+            ItemStack stack = backup.getItem(slot);
+            if (stack.getAmount() > 1) {
+                stack.setAmount(stack.getAmount() - 1);
+            } else {
+                stack = null;
+            }
+            backup.setItem(slot, stack);
+            target.addItem(new ItemStack(Material.COAL, 9));
+            return true;
+	    }
+	    return false;
 	}
 
 	private boolean advance() {
