@@ -1,6 +1,6 @@
 name: RailDriver
 main: ca.mcpnet.RailDriver.RailDriver
-version: 0.5
+version: 0.6
 author: globnobulous ( bugfix + some new features by m0rkeulv)
 description: A modified version of RailDriver made to work with Bukkit 1.4.7 and later
 commands:

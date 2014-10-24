@@ -1,0 +1,52 @@
+== MOD INFO ==
+This version adds a few tweaks to the original while maintaining most of the same features.
+
+== Tweaks ==
+Note: All tweaks can be turned off in the config file.
+
+0. Break blocks 
+This feature must be set to false due to the problem where the MineCraft client crashes when some blocks are broken/drop is collected. I made it an option as later version of the client might fix this problem.
+
+1. Water-cooling
+Put a water-bucket in the chest to allow RailDriver to convert lava into obsidian and mine it.
+
+2. Glass Walls
+adding sand and a lava-bucket to the chest will make it create glass walls to protect you when drilling through lava.
+
+3. Ignore broken ground:
+will continue on even if  parts of the ground is missing.
+
+
+
+== RailDriver ==
+
+This plugin provides a player with the ability to build a coal powered mining and railroad construction machine!  Check out the [[http://www.youtube.com/watch?v=8I_jQDehT0Q|RailDriver in action]] on youtube!
+
+=== Installation ===
+Drop the jar in your plugins directory and go!
+
+=== Configuration ===
+Standard config.yml in the RailDriver directory.  **Plugin reload is required for config file changes to take effect**
+
+** requires_fuel ** option determines if RailDrivers require fuel and supplies in order to operate.  When set to false, an active RailDriver will not consume coal from the furnaces nor supplies from the chest.
+
+=== Commands ===
+<<code yaml>>
+   rd_stock:
+      description: stock the player inventory with all required blocks for building a RailDriver
+      permission: RailDriver.rd_stock
+      usage: /rd_stock [player]
+   rd_devkit:
+      description: stock the player inventory with a developer kit of tools
+      permission: RailDriver.rd_devkit
+      usage: /rd_devkit [player]
+<</code>>
+=== Permissions ===
+<<code yaml>>
+   RailDriver.rd_stock:
+      description: allows player to execute the rd_stock command
+      default: op
+   RailDriver.rd_devkit:
+      description: allows player to execute the rd_devkit command
+      default: op
+<</code>>
